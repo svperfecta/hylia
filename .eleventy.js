@@ -52,6 +52,19 @@ module.exports = function(config) {
       .slice(0, site.maxPostsPerPage);
   });
 
+  const liveGames = game => game.date <= now && !game.data.draft;
+  config.addCollection('games', collection => {
+    return [
+      ...collection.getFilteredByGlob('./src/games/*.md').filter(liveGames)
+    ].reverse();
+  });
+
+  config.addCollection('gameFeed', collection => {
+    return [...collection.getFilteredByGlob('./src/games/*.md').filter(liveGames)]
+      .reverse()
+      .slice(0, site.maxGamesPerPage);
+  });
+
   // Plugins
   config.addPlugin(rssPlugin);
   config.addPlugin(syntaxHighlight);
